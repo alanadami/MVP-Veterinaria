@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clínica veterinária</title>
+  <style>
+    :root {
+      --bg-1: #f2f7f6;
+      --bg-2: #e7f0ee;
+      --card: #ffffff;
+      --ink: #1f2a2e;
+      --muted: #516068;
+      --accent: #0f7b6c;
+      --accent-2: #0a5a4e;
+      --warning: #b00020;
+      --ring: rgba(15, 123, 108, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 600px at 20% 0%, #ffffff 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      width: 100%;
+      text-align: center;
+      padding: 28px 16px 10px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: 2rem;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .container {
+      width: min(1100px, 92vw);
+      padding: 18px 0 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .screen {
+      width: 100%;
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+
+    .screen.active {
+      display: grid;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(31, 42, 46, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+    }
+
+    h2, h3 {
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .row.left {
+      justify-content: flex-start;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d4e1dd;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    button {
+      border: none;
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--accent-2);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .ghost {
+      background: #f3faf8;
+      color: var(--ink);
+      border: 1px solid #d6ebe6;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list button {
+      background: #f3faf8;
+      color: var(--ink);
+      border: 1px solid #d6ebe6;
+      text-align: left;
+      padding: 10px 12px;
+    }
+
+    .list button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .divider {
+      height: 1px;
+      width: 100%;
+      background: #e6efec;
+    }
+
+    .recording-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #f8fbfa;
+      border: 1px solid #e3eeeb;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      border-radius: 12px;
+      border: 1px solid #d4e1dd;
+      padding: 10px;
+      resize: vertical;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.9rem;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    pre {
+      background: #f8fbfa;
+      border: 1px solid #e3eeeb;
+      border-radius: 12px;
+      padding: 12px;
+      white-space: pre-wrap;
+      min-height: 120px;
+      font-family: "Consolas", "Courier New", monospace;
+    }
+
+    .error {
+      color: var(--warning);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e2f4f1;
+      color: var(--accent-2);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Clínica veterinária</h1>
+    <p>Selecione o paciente, grave os áudios e gere relatórios.</p>
+  </header>
+
+  <main class="container">
+    <section id="screenPacientes" class="screen active">
+      <div class="card">
+        <h2>Selecionar paciente</h2>
+        <div class="row">
+          <input id="animalName" type="text" placeholder="Nome do animal">
+          <button id="createBtn">Criar paciente</button>
+        </div>
+        <div id="attList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Relatório geral do dia</h2>
+        <div class="row left">
+          <input id="reportDate" type="date">
+          <button id="dailyReportBtn">Gerar relatório</button>
+        </div>
+        <pre id="dailyReportOutput"></pre>
+      </div>
+    </section>
+
+    <section id="screenAtendimento" class="screen">
+      <div class="card">
+        <div class="row left">
+          <button id="backBtn" class="ghost">Voltar</button>
+          <span id="currentInfo" class="muted">Atendimento</span>
+          <span id="finalStatus" class="badge" style="display:none;">Finalizado</span>
+        </div>
+        <div class="row">
+          <button id="startBtn" disabled>Iniciar gravação</button>
+          <button id="stopBtn" disabled>Parar</button>
+          <button id="finalizeBtn" disabled>Finalizar atendimento</button>
+        </div>
+        <div class="divider"></div>
+        <h3>Gravações</h3>
+        <div id="recordingsList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Revisão e relatório</h2>
+        <textarea id="reviewJson" placeholder="JSON consolidado aparecerá aqui"></textarea>
+        <div class="row left">
+          <button id="generateBtn" disabled>Gerar relatório final</button>
+        </div>
+        <div id="reviewError" class="error"></div>
+        <h3>Relatório</h3>
+        <pre id="reportOutput"></pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    const atendimentos = new Map();
+    let currentId = null;
+
+    const animalName = document.getElementById('animalName');
+    const createBtn = document.getElementById('createBtn');
+    const attList = document.getElementById('attList');
+    const reportDate = document.getElementById('reportDate');
+    const dailyReportBtn = document.getElementById('dailyReportBtn');
+    const dailyReportOutput = document.getElementById('dailyReportOutput');
+
+    const screenPacientes = document.getElementById('screenPacientes');
+    const screenAtendimento = document.getElementById('screenAtendimento');
+
+    const backBtn = document.getElementById('backBtn');
+    const currentInfo = document.getElementById('currentInfo');
+    const finalStatus = document.getElementById('finalStatus');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const finalizeBtn = document.getElementById('finalizeBtn');
+    const recordingsList = document.getElementById('recordingsList');
+    const reviewJson = document.getElementById('reviewJson');
+    const generateBtn = document.getElementById('generateBtn');
+    const reportOutput = document.getElementById('reportOutput');
+    const reviewError = document.getElementById('reviewError');
+
+    function localDateString(date) {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function readJsonSafe(response) {
+      return response.text().then((text) => {
+        try {
+          return { data: JSON.parse(text), text };
+        } catch (e) {
+          return { data: null, text };
+        }
+      });
+    }
+
+    function setScreen(screen) {
+      if (screen === 'pacientes') {
+        screenPacientes.classList.add('active');
+        screenAtendimento.classList.remove('active');
+      } else {
+        screenPacientes.classList.remove('active');
+        screenAtendimento.classList.add('active');
+      }
+    }
+
+    function getCurrent() {
+      return currentId ? atendimentos.get(currentId) : null;
+    }
+
+    function setCurrent(id) {
+      currentId = id;
+      renderAtendimento();
+      setScreen('atendimento');
+    }
+
+    async function carregarAtendimentos() {
+      const response = await fetch('/atendimentos');
+      const { data } = await readJsonSafe(response);
+      atendimentos.clear();
+      (data?.atendimentos || []).forEach((item) => {
+        atendimentos.set(item.id, {
+          id: item.id,
+          nome: item.nome,
+          createdDate: item.createdDate,
+          recordings: [],
+          reviewJson: '',
+          report: '',
+          finalized: item.finalizado
+        });
+      });
+      renderLista();
+    }
+
+    function renderLista() {
+      attList.innerHTML = '';
+      for (const item of atendimentos.values()) {
+        const btn = document.createElement('button');
+        btn.textContent = `${item.nome} • ${item.createdDate || ''}`;
+        btn.onclick = () => setCurrent(item.id);
+        attList.appendChild(btn);
+      }
+      if (atendimentos.size === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'muted';
+        empty.textContent = 'Nenhum paciente cadastrado.';
+        attList.appendChild(empty);
+      }
+    }
+
+    function renderAtendimento() {
+      const current = getCurrent();
+      if (!current) return;
+
+      currentInfo.textContent = `${current.nome} (${current.id})`;
+      startBtn.disabled = isRecording;
+      stopBtn.disabled = !isRecording;
+      finalizeBtn.disabled = isRecording;
+      generateBtn.disabled = !current.reviewJson;
+      reviewJson.value = current.reviewJson || '';
+      reportOutput.textContent = current.report || '';
+      finalStatus.style.display = current.finalized ? 'inline-block' : 'none';
+
+      recordingsList.innerHTML = '';
+      if (current.recordings.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'muted';
+        empty.textContent = 'Nenhuma gravação ainda.';
+        recordingsList.appendChild(empty);
+        return;
+      }
+
+      for (const rec of current.recordings) {
+        const item = document.createElement('div');
+        item.className = 'recording-item';
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = rec.audioURL;
+        const status = document.createElement('div');
+        status.className = 'muted';
+        status.textContent = rec.status;
+        const texto = document.createElement('pre');
+        texto.textContent = rec.texto || '';
+        item.appendChild(audio);
+        item.appendChild(status);
+        item.appendChild(texto);
+        recordingsList.appendChild(item);
+      }
+    }
+
+    createBtn.onclick = async () => {
+      const nome = animalName.value.trim();
+      if (!nome) return;
+
+      const response = await fetch('/criar-atendimento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome })
+      });
+      const { data } = await readJsonSafe(response);
+      if (!data?.id) return;
+
+      atendimentos.set(data.id, {
+        id: data.id,
+        nome: data.nome,
+        createdDate: data.createdDate,
+        recordings: [],
+        reviewJson: '',
+        report: '',
+        finalized: false
+      });
+      animalName.value = '';
+      renderLista();
+    };
+
+    attList.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+    });
+
+    backBtn.onclick = () => {
+      setScreen('pacientes');
+    };
+
+    startBtn.onclick = async () => {
+      const current = getCurrent();
+      if (!current) return;
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        isRecording = true;
+        renderAtendimento();
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioURL = URL.createObjectURL(audioBlob);
+
+          const rec = { audioURL, status: 'Enviando e transcrevendo...', texto: '' };
+          current.recordings.push(rec);
+          renderAtendimento();
+
+          const formData = new FormData();
+          formData.append('audio', audioBlob, `audio-${Date.now()}.webm`);
+          formData.append('atendimentoId', current.id);
+          formData.append('nome', current.nome);
+
+          try {
+            const response = await fetch('/upload-audio', {
+              method: 'POST',
+              body: formData
+            });
+            const { data, text } = await readJsonSafe(response);
+            if (!response.ok) {
+              rec.status = data?.error || text || 'Erro ao transcrever';
+              renderAtendimento();
+              return;
+            }
+            rec.texto = data?.texto || '';
+            rec.status = 'Transcrição concluída';
+            renderAtendimento();
+          } catch (error) {
+            rec.status = 'Erro ao transcrever';
+            renderAtendimento();
+          }
+        };
+
+        mediaRecorder.start();
+      } catch (err) {
+        console.error('Erro ao acessar microfone:', err);
+      }
+    };
+
+    stopBtn.onclick = () => {
+      if (!mediaRecorder) return;
+      mediaRecorder.stop();
+      isRecording = false;
+      renderAtendimento();
+    };
+
+    finalizeBtn.onclick = async () => {
+      const current = getCurrent();
+      if (!current || isRecording) return;
+
+      reviewError.textContent = '';
+      reviewJson.value = '';
+      reportOutput.textContent = '';
+      finalizeBtn.disabled = true;
+
+      try {
+        const response = await fetch('/finalizar-atendimento', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ atendimentoId: current.id })
+        });
+        const { data, text } = await readJsonSafe(response);
+        if (!response.ok) {
+          reviewError.textContent = data?.error || text || 'Erro ao finalizar atendimento.';
+          return;
+        }
+
+        if (data?.estruturado) {
+          current.reviewJson = JSON.stringify(data.estruturado, null, 2);
+        } else {
+          current.reviewJson = data?.estruturadoRaw || '';
+        }
+        current.finalized = true;
+        renderAtendimento();
+      } catch (error) {
+        reviewError.textContent = 'Erro ao finalizar atendimento.';
+      } finally {
+        finalizeBtn.disabled = false;
+      }
+    };
+
+    generateBtn.onclick = async () => {
+      const current = getCurrent();
+      if (!current) return;
+
+      reviewError.textContent = '';
+      reportOutput.textContent = '';
+      generateBtn.disabled = true;
+
+      let data;
+      try {
+        data = JSON.parse(reviewJson.value);
+      } catch (e) {
+        reviewError.textContent = 'JSON inválido. Corrija antes de gerar o relatório.';
+        generateBtn.disabled = false;
+        return;
+      }
+
+      try {
+        const response = await fetch('/gerar-relatorio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await readJsonSafe(response);
+        if (!response.ok) {
+          reviewError.textContent = result.data?.error || result.text || 'Erro ao gerar relatório.';
+          return;
+        }
+        current.report = result.data?.relatorio || '';
+        current.reviewJson = reviewJson.value;
+        renderAtendimento();
+      } catch (error) {
+        reviewError.textContent = 'Erro ao gerar relatório.';
+      } finally {
+        generateBtn.disabled = false;
+      }
+    };
+
+    dailyReportBtn.onclick = async () => {
+      const date = reportDate.value || localDateString(new Date());
+      const response = await fetch(`/relatorio-diario?date=${encodeURIComponent(date)}`);
+      const { data, text } = await readJsonSafe(response);
+      dailyReportOutput.textContent = data?.relatorio || text || '';
+    };
+
+    reportDate.value = localDateString(new Date());
+    carregarAtendimentos();
+  </script>
+</body>
+</html>
